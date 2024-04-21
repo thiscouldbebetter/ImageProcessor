@@ -12,6 +12,21 @@
 		</p>
 
 		<div>
+			<label>Images to Process:</label>
+			<select
+				id="selectImagesToProcess"
+				onchange="UiEventHandler.selectImagesToProcess_Changed(this)"
+			></select>
+			<label>Upload:</label>
+			<input
+				type="file"
+				multiple="multiple"
+				onchange="UiEventHandler.inputFiles_Changed(this);"
+			></input>
+		</div>
+
+
+		<div>
 
 			<label>Operations to Perform:</label>
 			<button onclick="UiEventHandler.buttonOperationsClear_Clicked()">Clear</button>
@@ -41,14 +56,6 @@
 
 				<tr>
 					<td>
-						<label>Load:</label>
-						<input
-							id="inputFile"
-							type="file"
-							onchange="UiEventHandler.inputFile_Changed();"
-						/>
-						<br />
-
 						<div id="divImageBefore">
 							<span>[No image loaded yet.]</span>
 						</div>

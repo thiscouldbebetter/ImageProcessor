@@ -36,22 +36,6 @@ class UiEventHandler
 		}
 		else
 		{
-			var imageAsCanvasWorking = d.createElement("canvas");
-			imageAsCanvasWorking.width = imageAsCanvasBefore.width;
-			imageAsCanvasWorking.height = imageAsCanvasBefore.height;
-
-			var imageAsCanvasAfter = d.createElement("canvas");
-			imageAsCanvasAfter.width = imageAsCanvasBefore.width;
-			imageAsCanvasAfter.height = imageAsCanvasBefore.height;
-			var divImageAfter = d.getElementById("divImageAfter");
-			divImageAfter.innerHTML = "";
-			divImageAfter.appendChild(imageAsCanvasAfter);
-
-			var imageProcessor = new ImageProcessor
-			(
-				imageAsCanvasBefore, imageAsCanvasWorking, imageAsCanvasAfter
-			);
-
 			var textareaOperationsToPerform =
 				d.getElementById("textareaOperationsToPerform");
 			var commandsToPerformAsText =
@@ -69,24 +53,10 @@ class UiEventHandler
 			(
 				x => ImageProcessorCommand.fromLine(x)
 			);
-			if (commandsToPerform.length == 0)
-			{
-				alert("There are no operations to perform.");
-			}
-			else
-			{
-				imageProcessor.imageBeforeCopyToWorking();
-				var imageWorking = imageProcessor.imageAsCanvasWorking;
-				var imageAfter = imageProcessor.imageAsCanvasAfter;
 
-				for (var i = 0; i < commandsToPerform.length; i++)
-				{
-					var command = commandsToPerform[i];
-					command.apply(imageWorking, imageAfter);
+			var imageProcessor = ImageProcessor.Instance();
 
-					imageProcessor.imageAfterCopyToWorking();
-				}
-			}
+			imageProcessor.commandsPerform(commandsToPerform);
 		}
 	}
 
@@ -140,37 +110,78 @@ class UiEventHandler
 		alert(instructions);
 	}
 
-	static inputFile_Changed()
+	static inputFiles_Changed(inputFiles)
 	{
 		var d = document;
 
 		var divImageBefore = d.getElementById("divImageBefore");
 		// divImageAsCanvas.innerHTML = "Loading image..."; // Probably doesn't work.
 
-		var inputFile = d.getElementById("inputFile");
-		var file = inputFile.files[0];
-		if (file != null)
+		var files = inputFiles.files;
+		if (files.length > 0)
 		{
-			var fileReader = new FileReader();
-			fileReader.onload = (eventFileLoaded) =>
-			{
-				var imageAsDataUrl = eventFileLoaded.target.result;
+			var imgElementsLoadedSoFar = [];
 
-				var imgImageLoaded = d.createElement("img");
-				imgImageLoaded.style.border = "1px solid";
-				imgImageLoaded.onload = (eventImageLoaded) =>
+			for (var i = 0; i < files.length; i++)
+			{
+				var file = files[i];
+				var fileReader = new FileReader();
+				fileReader.fileName = file.name;
+				fileReader.onload = (eventFileLoaded) =>
 				{
-					var canvasImage = d.createElement("canvas");
-					canvasImage.width = imgImageLoaded.width;
-					canvasImage.height = imgImageLoaded.height;
-					var graphics = canvasImage.getContext("2d");
-					graphics.drawImage(imgImageLoaded, 0, 0);
-					divImageBefore.innerHTML = "";
-					divImageBefore.appendChild(canvasImage);
+					var imageAsDataUrl = eventFileLoaded.target.result;
+
+					var imgImageToLoad = d.createElement("img");
+					imgImageToLoad.name = eventFileLoaded.target.fileName;
+					imgImageToLoad.style.border = "1px solid";
+					imgImageToLoad.onload = (eventImageLoaded) =>
+					{
+						var imgImageLoaded = eventImageLoaded.target;
+						imgElementsLoadedSoFar.push(imgImageLoaded);
+						if (imgElementsLoadedSoFar.length >= files.length)
+						{
+							this.inputFiles_Changes_ImagesLoaded
+							(
+								imgElementsLoadedSoFar
+							);
+						}
+					}
+					imgImageToLoad.src = imageAsDataUrl;
 				}
-				imgImageLoaded.src = imageAsDataUrl;
+				fileReader.readAsDataURL(file);
 			}
-			fileReader.readAsDataURL(file);
 		}
 	}
+
+	static inputFiles_Changes_ImagesLoaded(imgElementsLoaded)
+	{
+		var imageProcessor = ImageProcessor.Instance();
+		var d = document;
+		var selectImagesToProcess =
+			d.getElementById("selectImagesToProcess");
+		for (var i = 0; i < imgElementsLoaded.length; i++)
+		{
+			var imgElement = imgElementsLoaded[i];
+
+			imageProcessor.imageAdd(imgElement);
+
+			var imageAsOption = d.createElement("option");
+			imageAsOption.innerHTML = imgElement.name;
+			imageAsOption.value = imgElement.name;
+			selectImagesToProcess.appendChild(imageAsOption);
+		}
+
+		this.selectImagesToProcess_Changed();
+	}
+
+	static selectImagesToProcess_Changed()
+	{
+		var d = document;
+		var selectImagesToProcess =
+			d.getElementById("selectImagesToProcess");
+		var imgSelectedName = selectImagesToProcess.value;
+		var imageProcessor = ImageProcessor.Instance();
+		imageProcessor.imageSelectByName(imgSelectedName);
+	}
+
 }
