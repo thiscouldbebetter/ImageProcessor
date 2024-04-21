@@ -60,6 +60,15 @@ class ImageProcessorOperation_Instances
 			this.applyBox
 		);
 
+		this.Brighten = ipo
+		(
+			"brighten",
+			[
+				p("increment", formatNumber)
+			], // parameters
+			this.applyBrighten
+		);
+
 		this.Clear = ipo
 		(
 			"clear",
@@ -70,6 +79,16 @@ class ImageProcessorOperation_Instances
 		);
 
 		this.ColorInvert = ipo("colorinvert", parametersNone, this.applyColorInvert);
+
+		this.ColorReplace = ipo
+		(
+			"colorreplace",
+			[
+				p("colorFrom", formatString),
+				p("colorTo", formatString)
+			],
+			this.applyColorReplace
+		);
 
 		this.Crop = new ImageProcessorOperation
 		(
@@ -100,6 +119,20 @@ class ImageProcessorOperation_Instances
 			"flipvertical",
 			[], // parameters
 			this.applyFlipVertical
+		);
+
+		this.GetColorAt = ipo
+		(
+			"getcolorat",
+			[], // parameters
+			this.applyGetColorAt
+		);
+
+		this.GetSize = ipo
+		(
+			"getsize",
+			[], // parameters
+			this.applyGetSize
 		);
 
 		this.Monochrome = ipo
@@ -134,13 +167,6 @@ class ImageProcessorOperation_Instances
 			this.applyShift
 		);
 
-		this.ShowSize = ipo
-		(
-			"showsize",
-			[], // parameters
-			this.applyShowSize
-		);
-
 		this.Text = ipo
 		(
 			"text",
@@ -157,16 +183,19 @@ class ImageProcessorOperation_Instances
 		[
 			this.Blur,
 			this.Box,
+			this.Brighten,
 			this.Clear,
 			this.ColorInvert,
+			this.ColorReplace,
 			this.Crop,
 			this.DoNothing,
 			this.FlipHorizontal,
 			this.FlipVertical,
+			this.GetColorAt,
+			this.GetSize,
 			this.Monochrome,
 			this.Rotate,
 			this.Scale,
-			this.ShowSize,
 			this.Text,
 			this.Shift
 		];
@@ -285,6 +314,55 @@ class ImageProcessorOperation_Instances
 		}
 	}
 
+	applyBrighten(command, imageBefore, imageAfter)
+	{
+		var args = command.args;
+		var intensityOffset = 255 * parseFloat(args[0]);
+
+		var gBefore = imageBefore.getContext("2d");
+		var gAfter = imageAfter.getContext("2d");
+
+		var size = new Coords(imageBefore.width, imageBefore.height);
+
+		var imageBeforeData =
+			gBefore.getImageData(0, 0, size.x, size.y).data;
+
+		for (var y = 0; y < size.y; y++)
+		{
+			for (var x = 0; x < size.x; x++)
+			{
+				var pixelIndex = y * size.x + x;
+				var pixelComponentOffset = pixelIndex * 4;
+
+				var componentsBefore =
+				[
+					imageBeforeData[pixelComponentOffset],
+					imageBeforeData[pixelComponentOffset + 1],
+					imageBeforeData[pixelComponentOffset + 2]
+				];
+
+				var componentsAfter = 
+					componentsBefore.slice().map
+					(
+						x =>
+						{
+							x += intensityOffset;
+							x = x < 0 ? 0 : x > 255 ? 255 : x;
+							return x;
+						}
+					)
+
+				var colorAfter =
+					"rgb("
+					+ componentsAfter.join(",")
+					+ ")";
+
+				gAfter.fillStyle = colorAfter;
+				gAfter.fillRect(x, y, 1, 1);
+			}
+		}
+	}
+
 	applyClear(command, imageBefore, imageAfter)
 	{
 		var gAfter = imageAfter.getContext("2d");
@@ -327,6 +405,71 @@ class ImageProcessorOperation_Instances
 				var color = "rgb(" + red + "," + green + "," + blue + ")";
 				gAfter.fillStyle = color;
 				gAfter.fillRect(x, y, 1, 1);
+			}
+		}
+	}
+
+	applyColorReplace(command, imageBefore, imageAfter)
+	{
+		var args = command.args;
+		var colorFrom = args[0];
+		var colorTo = args[1];
+
+		var d = document;
+		var colorFromAsCanvas = d.createElement("canvas");
+		colorFromAsCanvas.width = 1;
+		colorFromAsCanvas.height = 1;
+		var gColorFromSwatch = colorFromAsCanvas.getContext("2d");
+		gColorFromSwatch.fillStyle = colorFrom;
+		gColorFromSwatch.fillRect(0, 0, 1, 1);
+		var colorFromAsImageData =
+			gColorFromSwatch.getImageData(0, 0, 1, 1).data;
+		var colorFromRed = colorFromAsImageData[0];
+		var colorFromGreen = colorFromAsImageData[1];
+		var colorFromBlue = colorFromAsImageData[2];
+		var colorFromAlpha = colorFromAsImageData[3];
+
+		var gBefore = imageBefore.getContext("2d");
+		var gAfter = imageAfter.getContext("2d");
+
+		gAfter.drawImage(imageBefore, 0, 0);
+
+		var size = new Coords(imageBefore.width, imageBefore.height);
+
+		var imageBeforeData =
+			gBefore.getImageData(0, 0, size.x, size.y).data;
+
+		for (var y = 0; y < size.y; y++)
+		{
+			for (var x = 0; x < size.x; x++)
+			{
+				var pixelIndex = y * size.x + x;
+				var pixelComponentOffset = pixelIndex * 4;
+
+				var colorBeforeRed =
+					imageBeforeData[pixelComponentOffset];
+				var colorBeforeGreen =
+					imageBeforeData[pixelComponentOffset + 1];
+				var colorBeforeBlue =
+					imageBeforeData[pixelComponentOffset + 2];
+				var colorBeforeAlpha =
+					imageBeforeData[pixelComponentOffset + 3];
+
+				var colorMatches =
+					(colorBeforeRed == colorFromRed)
+					&& (colorBeforeGreen == colorFromGreen)
+					&& (colorBeforeBlue == colorFromBlue)
+					&& (colorBeforeAlpha == colorFromAlpha);
+
+				if (colorMatches)
+				{
+					gAfter.clearRect(x, y, 1, 1);
+					if (colorTo != null)
+					{
+						gAfter.fillStyle = colorTo;
+						gAfter.fillRect(x, y, 1, 1);
+					}
+				}
 			}
 		}
 	}
@@ -409,6 +552,47 @@ class ImageProcessorOperation_Instances
 				gAfter.fillRect(x, size.y - y - 1, 1, 1);
 			}
 		}
+	}
+
+	applyGetColorAt(command, imageBefore, imageAfter)
+	{
+		var posToCheck = Coords.fromString(command.args[0]);
+
+		var gBefore = imageBefore.getContext("2d");
+		var colorAtPosAsComponentsRGBA =
+			gBefore.getImageData(posToCheck.x, posToCheck.y, 1, 1).data;
+		var colorAtPosAsString =
+			"rgba(" + colorAtPosAsComponentsRGBA.join(",") + ")";
+
+		var fontHeightInPixels = 20;
+
+		imageAfter.width = 200;
+		imageAfter.height = fontHeightInPixels * 1.5;
+		var gAfter = imageAfter.getContext("2d");
+
+		gAfter.fillStyle = "White";
+		gAfter.fillRect(0, 0, imageAfter.width, imageAfter.height);
+		gAfter.fillStyle = "Black";
+		gAfter.font = fontHeightInPixels + "px sans-serif";
+		gAfter.fillText(colorAtPosAsString, 0, fontHeightInPixels);
+	}
+
+	applyGetSize(command, imageBefore, imageAfter)
+	{
+		var size = new Coords(imageBefore.width, imageBefore.height);
+		var sizeAsString = size.x + "x" + size.y;
+
+		var fontHeightInPixels = 20;
+
+		imageAfter.width = 200;
+		imageAfter.height = fontHeightInPixels * 1.5;
+		var gAfter = imageAfter.getContext("2d");
+
+		gAfter.fillStyle = "White";
+		gAfter.fillRect(0, 0, imageAfter.width, imageAfter.height);
+		gAfter.fillStyle = "Black";
+		gAfter.font = fontHeightInPixels + "px sans-serif";
+		gAfter.fillText(colorComponentsRGBAAsString, 0, fontHeightInPixels);
 	}
 
 	applyMonochrome(command, imageBefore, imageAfter)
@@ -543,20 +727,6 @@ class ImageProcessorOperation_Instances
 			0, 0, // dx, dy
 			shiftAmount.x, shiftAmount.y // dw, dh
 		);
-	}
-
-	applyShowSize(command, imageBefore, imageAfter)
-	{
-		var gAfter = imageAfter.getContext("2d");
-
-		var size = new Coords(imageBefore.width, imageBefore.height);
-		var sizeAsString = size.x + "x" + size.y;
-
-		var fontHeightInPixels = 10;
-
-		gAfter.fillStyle = "Black";
-		gAfter.font = fontHeightInPixels + "px";
-		gAfter.fillText(sizeAsString, 0, fontHeightInPixels);
 	}
 
 	applyText(command, imageBefore, imageAfter)
