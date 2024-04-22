@@ -211,12 +211,22 @@ class ImageProcessorOperation_Instances
 		return this._AllByName.get(name);
 	}
 
+	static canvasToGraphicsContext(canvas)
+	{
+		var g = canvas.getContext
+		(
+			"2d",
+			{willReadFrequently: true}
+		);
+		return g;
+	}
+
 	// Applys.
 
 	applyBlur(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -293,7 +303,7 @@ class ImageProcessorOperation_Instances
 
 	applyBox(command, imageBefore, imageAfter)
 	{
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 		gAfter.drawImage(imageBefore, 0, 0);
 
 		var args = command.args;
@@ -319,8 +329,8 @@ class ImageProcessorOperation_Instances
 		var args = command.args;
 		var intensityOffset = 255 * parseFloat(args[0]);
 
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -365,7 +375,7 @@ class ImageProcessorOperation_Instances
 
 	applyClear(command, imageBefore, imageAfter)
 	{
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 		var size = new Coords(imageBefore.width, imageBefore.height);
 		imageAfter.width = size.x;
 		imageAfter.height = size.y;
@@ -382,8 +392,8 @@ class ImageProcessorOperation_Instances
 
 	applyColorInvert(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -429,8 +439,8 @@ class ImageProcessorOperation_Instances
 		var colorFromBlue = colorFromAsImageData[2];
 		var colorFromAlpha = colorFromAsImageData[3];
 
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		gAfter.drawImage(imageBefore, 0, 0);
 
@@ -476,7 +486,7 @@ class ImageProcessorOperation_Instances
 
 	applyCrop(command, imageBefore, imageAfter)
 	{
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var sizeBefore = new Coords(imageBefore.width, imageAfter.height);
 
@@ -498,14 +508,14 @@ class ImageProcessorOperation_Instances
 
 	applyDoNothing(command, imageBefore, imageAfter)
 	{
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 		gAfter.drawImage(imageBefore, 0, 0);
 	}
 
 	applyFlipHorizontal(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -530,8 +540,8 @@ class ImageProcessorOperation_Instances
 
 	applyFlipVertical(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -558,7 +568,9 @@ class ImageProcessorOperation_Instances
 	{
 		var posToCheck = Coords.fromString(command.args[0]);
 
-		var gBefore = imageBefore.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
+
 		var colorAtPosAsComponentsRGBA =
 			gBefore.getImageData(posToCheck.x, posToCheck.y, 1, 1).data;
 		var colorAtPosAsString =
@@ -568,7 +580,6 @@ class ImageProcessorOperation_Instances
 
 		imageAfter.width = 200;
 		imageAfter.height = fontHeightInPixels * 1.5;
-		var gAfter = imageAfter.getContext("2d");
 
 		gAfter.fillStyle = "White";
 		gAfter.fillRect(0, 0, imageAfter.width, imageAfter.height);
@@ -586,7 +597,7 @@ class ImageProcessorOperation_Instances
 
 		imageAfter.width = 200;
 		imageAfter.height = fontHeightInPixels * 1.5;
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		gAfter.fillStyle = "White";
 		gAfter.fillRect(0, 0, imageAfter.width, imageAfter.height);
@@ -597,8 +608,8 @@ class ImageProcessorOperation_Instances
 
 	applyMonochrome(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -624,8 +635,8 @@ class ImageProcessorOperation_Instances
 
 	applyRotate(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		imageAfter.width = imageBefore.height;
 		imageAfter.height = imageBefore.width;
@@ -665,7 +676,7 @@ class ImageProcessorOperation_Instances
 		imageAfter.width = sizeScaled.x;
 		imageAfter.height = sizeScaled.y;
 
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 		gAfter.drawImage
 		(
 			imageBefore,
@@ -676,8 +687,8 @@ class ImageProcessorOperation_Instances
 
 	applyShift(command, imageBefore, imageAfter)
 	{
-		var gBefore = imageBefore.getContext("2d");
-		var gAfter = imageAfter.getContext("2d");
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		var size = new Coords(imageBefore.width, imageBefore.height);
 
@@ -731,7 +742,7 @@ class ImageProcessorOperation_Instances
 
 	applyText(command, imageBefore, imageAfter)
 	{
-		var gAfter = imageAfter.getContext("2d");
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
 		gAfter.drawImage(imageBefore, 0, 0);
 

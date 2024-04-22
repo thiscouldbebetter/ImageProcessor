@@ -3,10 +3,9 @@ class ImageProcessor
 {
 	constructor()
 	{
-		this.imagesToProcessAsImgElements = [];
-		this.imagesProcessedAsCanvases = [];
+		this.imagePairsBeforeAndAfter = [];
 
-		this.imageToProcessSelectedName = null;
+		this.imagePairBeforeAndAfterSelectedName = null;
 
 		this.domElementUpdate();
 	}
@@ -28,48 +27,43 @@ class ImageProcessor
 		}
 		else
 		{
-			for (var i = 0; i < this.imagesToProcessAsImgElements.length; i++)
+			var imagePairs =
+				this.imagePairsBeforeAndAfter;
+
+			for (var i = 0; i < imagePairs.length; i++)
 			{
-				var imageToProcess =
-					this.imagesToProcessAsImgElements[i];
+				var imagePair = imagePairs[i];
+				var imageBefore = imagePair.before;
+				var imageAfter = imagePair.after;
 
 				var imageAsCanvasBefore = this.imageAsCanvasBefore;
-				imageAsCanvasBefore.width = imageToProcess.width;
-				imageAsCanvasBefore.height = imageToProcess.height;
+				imageAsCanvasBefore.width = imageBefore.width;
+				imageAsCanvasBefore.height = imageBefore.height;
 
 				var imageAsCanvasWorking = this.imageAsCanvasWorking;
-				imageAsCanvasWorking.width = imageToProcess.width;
-				imageAsCanvasWorking.height = imageToProcess.height;
+				imageAsCanvasWorking.width = imageBefore.width;
+				imageAsCanvasWorking.height = imageBefore.height;
 
 				var imageAsCanvasAfter = this.imageAsCanvasAfter;
-				imageAsCanvasAfter.width = imageToProcess.width;
-				imageAsCanvasAfter.height = imageToProcess.height;
+				imageAsCanvasAfter.width = imageBefore.width;
+				imageAsCanvasAfter.height = imageBefore.height;
 
-				var gBefore = imageAsCanvasBefore.getContext("2d");
-				gBefore.drawImage(imageToProcess, 0, 0);
+				var gBefore = imageAsCanvasBefore.getContext
+				(
+					"2d", {willReadFrequently: true}
+				);
+				gBefore.drawImage(imageBefore, 0, 0);
 
-				this.imageBeforeCopyToWorking();
 				var imageWorking = this.imageAsCanvasWorking;
-				var imageAfter = this.imageAsCanvasAfter;
+				this.imageCopyToOther(imageBefore, imageWorking);
 
 				for (var c = 0; c < commandsToPerform.length; c++)
 				{
 					var command = commandsToPerform[c];
 					command.apply(imageWorking, imageAfter);
 
-					this.imageAfterCopyToWorking();
+					this.imageCopyToOther(imageAfter, imageWorking);
 				}
-
-				var d = document;
-				var imageProcessedAsCanvas =
-					d.createElement("canvas");
-				this.imageCopyToOther
-				(
-					imageAfter, imageProcessedAsCanvas
-				);
-
-				this.imagesProcessedAsCanvases[i] =
-					imageProcessedAsCanvas;
 			}
 		}
 
@@ -78,39 +72,103 @@ class ImageProcessor
 
 	imageAdd(imageToAdd)
 	{
-		this.imagesToProcessAsImgElements.push(imageToAdd);
+		var d = document;
+		var imageBeforeAsCanvas = d.createElement("canvas");
+		var imageAfterAsCanvas = d.createElement("canvas");
+		var imagePairBeforeAndAfter = new ImagePairBeforeAndAfter
+		(
+			imageToAdd.name,
+			imageBeforeAsCanvas,
+			imageAfterAsCanvas
+		);
+		this.imageCopyToOther(imageToAdd, imageBeforeAsCanvas);
+		this.imageCopyToOther(imageToAdd, imageAfterAsCanvas);
+		this.imagePairsBeforeAndAfter.push(imagePairBeforeAndAfter);
 	}
 
-	imageByName(name)
+	imagePairBeforeAndAfterByName(name)
 	{
-		return this.imagesToProcessAsImgElements.find(x => x.name == name);
+		return this.imagePairsBeforeAndAfter.find(x => x.name == name);
 	}
 
 	imageCopyToOther(imageToCopy, imageToCopyOver)
 	{
+		imageToCopyOver.name = imageToCopy.name;
 		imageToCopyOver.width = imageToCopy.width;
 		imageToCopyOver.height = imageToCopy.height;
 		var graphicsToCopyOver = imageToCopyOver.getContext("2d");
 		graphicsToCopyOver.drawImage(imageToCopy, 0, 0);
 	}
 
-	imageSelectByName(name)
+	imagePairBeforeAndAfterSelected()
 	{
-		this.imageToProcessSelectedName = name;
+		return this.imagePairBeforeAndAfterByName
+		(
+			this.imagePairBeforeAndAfterSelectedName
+		);
+	}
 
-		var imgSelected = this.imageByName(name);
-		if (imgSelected == null)
+	imagePairBeforeAndAfterSelectByName(name)
+	{
+		this.imagePairBeforeAndAfterSelectedName = name;
+
+		var imagePairSelected =
+			this.imagePairBeforeAndAfterByName(name);
+		if (imagePairSelected == null)
 		{
-			imgSelected = this.imagesToProcessAsImgElements[0];
+			var imagePairSelected =
+				this.imagePairsBeforeAndAfter[0];
 		}
 
-		this.imageCopyToOther(imgSelected, this.imageAsCanvasBefore);
+		this.imageCopyToOther(imagePairSelected.before, this.imageAsCanvasBefore);
+
 		this.domElementUpdate();
 	}
 
-	imageSelected()
+	imagePairBeforeAndAfterSelected()
 	{
-		return this.imageByName(this.imageToProcessSelectedName);
+		return this.imagePairBeforeAndAfterByName
+		(
+			this.imagePairBeforeAndAfterSelectedName
+		);
+	}
+
+	imagesAfterApplyToBefore()
+	{
+		var imagePairs = this.imagePairsBeforeAndAfter;
+
+		for (var i = 0; i < imagePairs.length; i++)
+		{
+			var imagePair = imagePairs[i];
+			var imageAfter = imagePair.after;
+			var imageBefore = imagePair.before;
+			this.imageCopyToOther(imageAfter, imageBefore);
+		}
+		this.domElementUpdate();
+	}
+
+	imagesProcessedSave()
+	{
+		var imagePairs = this.imagePairsBeforeAndAfter;
+
+		var d = document;
+
+		for (var i = 0; i < imagePairs.length; i++)
+		{
+			var imagePair = imagePairs[i];
+			var imageName = imagePair.name;
+			var imageToSave = imagePair.after;
+
+			var imageToSaveAsDataUrl =
+				imageToSave.toDataURL("image/png");
+
+			var imageToSaveAsLink = d.createElement("a");
+			imageToSaveAsLink.href = imageToSaveAsDataUrl;
+			imageToSaveAsLink.download = imageName;
+			imageToSaveAsLink.click();
+		}
+
+		alert("" + imagePairs.length + " image(s) saved.");
 	}
 
 	// Copying.
@@ -157,15 +215,34 @@ class ImageProcessor
 		var divImageAfter = d.getElementById("divImageAfter");
 		divImageAfter.innerHTML = "";
 
-		var imageSelected = this.imageSelected();
-		if (imageSelected != null)
+		var imagePairSelected = this.imagePairBeforeAndAfterSelected();
+		if (imagePairSelected != null)
 		{
-			this.imageAsCanvasBefore = imageSelected;
-			this.imageBeforeCopyToAfter();
+			this.imageCopyToOther
+			(
+				imagePairSelected.before,
+				this.imageAsCanvasBefore
+			);
+
+			this.imageCopyToOther
+			(
+				imagePairSelected.after,
+				this.imageAsCanvasAfter
+			);
 
 			divImageBefore.appendChild(this.imageAsCanvasBefore);
 
 			divImageAfter.appendChild(this.imageAsCanvasAfter);
 		}
+	}
+}
+
+class ImagePairBeforeAndAfter
+{
+	constructor(name, before, after)
+	{
+		this.name = name;
+		this.before = before;
+		this.after = after;
 	}
 }

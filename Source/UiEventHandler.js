@@ -3,23 +3,8 @@ class UiEventHandler
 {
 	static buttonApply_Clicked()
 	{
-		var d = document;
-
-		var divImageAfter = d.getElementById("divImageAfter");
-		var imageAsCanvasAfter =
-			divImageAfter.getElementsByTagName("canvas")[0];
-		if (imageAsCanvasAfter != null)
-		{
-			var divImageBefore = d.getElementById("divImageBefore");
-			var imageAsCanvasBefore =
-				divImageBefore.getElementsByTagName("canvas")[0];
-			imageAsCanvasBefore.width = imageAsCanvasAfter.width;
-			imageAsCanvasBefore.height = imageAsCanvasAfter.height;
-			var graphicsBefore =
-				imageAsCanvasBefore.getContext("2d");
-
-			graphicsBefore.drawImage(imageAsCanvasAfter, 0, 0);
-		}
+		var imageProcessor = ImageProcessor.Instance();
+		imageProcessor.imagesAfterApplyToBefore();
 	}
 
 	static buttonPreview_Clicked()
@@ -86,7 +71,8 @@ class UiEventHandler
 			"rotate",
 			"scale 2x.5",
 			"text 40 red 20x30 hello",
-			"shift 100x-20"
+			"shift 100x-20",
+			"// End of list."
 		];
 		var newline = "\n";
 		var operationsToDemoAsString = operationsToDemoAsLines.join(newline);
@@ -108,6 +94,11 @@ class UiEventHandler
 			+ "\n";
 
 		alert(instructions);
+	}
+
+	static buttonSave_Clicked()
+	{
+		ImageProcessor.Instance().imagesProcessedSave();
 	}
 
 	static inputFiles_Changed(inputFiles)
@@ -179,9 +170,13 @@ class UiEventHandler
 		var d = document;
 		var selectImagesToProcess =
 			d.getElementById("selectImagesToProcess");
-		var imgSelectedName = selectImagesToProcess.value;
+		var imagePairBeforeAndAfterSelectedName =
+			selectImagesToProcess.value;
 		var imageProcessor = ImageProcessor.Instance();
-		imageProcessor.imageSelectByName(imgSelectedName);
+		imageProcessor.imagePairBeforeAndAfterSelectByName
+		(
+			imagePairBeforeAndAfterSelectedName
+		);
 	}
 
 }

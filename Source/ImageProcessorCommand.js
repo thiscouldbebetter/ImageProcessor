@@ -9,12 +9,25 @@ class ImageProcessorCommand
 
 	static fromLine(lineToParse)
 	{
-		var operationNameAndArguments = lineToParse.split(" ");
-		var operationName = operationNameAndArguments[0];
-		var operationInstances = ImageProcessorOperation.Instances();
-		var operation = operationInstances.byName(operationName);
-		var operationArguments = operationNameAndArguments.slice(1);
-		var returnValue = new ImageProcessorCommand(operation, operationArguments);
+		var returnValue = null;
+
+		var operations =
+			ImageProcessorOperation.Instances();
+
+		var commentCode = "//";
+		if (lineToParse.startsWith(commentCode) )
+		{
+			returnValue = ImageProcessorCommand(operation.DoNothing, []);
+		}
+		else
+		{
+			var operationNameAndArguments = lineToParse.split(" ");
+			var operationName = operationNameAndArguments[0];
+			var operation = operations.byName(operationName);
+			var operationArguments = operationNameAndArguments.slice(1);
+			returnValue = new ImageProcessorCommand(operation, operationArguments);
+		}
+
 		return returnValue;
 	}
 
