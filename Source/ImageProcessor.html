@@ -10,9 +10,11 @@
 		<h3>Image Processor</h3>
 
 		<p>
-			Upload an image, specify a list of operations to perform with arguments,
+			Upload images, specify a list of operations to perform with arguments,
 			click the Preview button to see the effects of that operations,
 			and click the Apply button to make the effects permanent.
+			Click one of the Save buttons to write the processed images
+			to a file or files.
 		</p>
 
 		<div>
@@ -86,15 +88,33 @@
 			<button onclick="UiEventHandler.buttonSave_Clicked();">
 				Save Processed Images
 			</button>
+
+			<button onclick="UiEventHandler.buttonSaveAsTarFile_Clicked();">
+				Save Processed Images As .TAR File
+			</button>
 		</div>
+
 	</div>
 
+<script type="text/javascript" src="Base64Encoder.js"></script>
 <script type="text/javascript" src="Box.js"></script>
 <script type="text/javascript" src="Coords.js"></script>
 <script type="text/javascript" src="ImageProcessor.js"></script>
 <script type="text/javascript" src="ImageProcessorCommand.js"></script>
 <script type="text/javascript" src="ImageProcessorOperation.js"></script>
 <script type="text/javascript" src="UiEventHandler.js"></script>
+
+<script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFile.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFileEntry.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFileEntryHeader.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFileTypeFlag.js"></script>
+
+<script type="text/javascript" src="TarFileExplorer/Source/Utility/ArrayHelper.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/Utility/ByteHelper.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/Utility/ByteStream.js"></script>
+<script type="text/javascript" src="TarFileExplorer/Source/Utility/FileHelper.js"></script>
+
+<script type="text/javascript" src="Imports.js"></script>
 
 </body>
 

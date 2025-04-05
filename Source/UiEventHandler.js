@@ -101,6 +101,11 @@ class UiEventHandler
 		ImageProcessor.Instance().imagesProcessedSave();
 	}
 
+	static buttonSaveAsTarFile_Clicked()
+	{
+		ImageProcessor.Instance().imagesProcessedSaveAsTarFile();
+	}
+
 	static inputFiles_Changed(inputFiles)
 	{
 		var d = document;

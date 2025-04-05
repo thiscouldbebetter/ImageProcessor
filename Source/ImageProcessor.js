@@ -171,6 +171,47 @@ class ImageProcessor
 		alert("" + imagePairs.length + " image(s) saved.");
 	}
 
+	imagesProcessedSaveAsTarFile()
+	{
+		var fileNameToSaveAs = "Images-Processed.tar"; // todo
+		if (fileNameToSaveAs.toLowerCase().endsWith(".tar") == false)
+		{
+			fileNameToSaveAs += ".tar";
+		}
+
+		var imagesAsTarFile = TarFile.fromName(fileNameToSaveAs);
+
+		var imagePairs = this.imagePairsBeforeAndAfter;
+
+		var d = document;
+
+		for (var i = 0; i < imagePairs.length; i++)
+		{
+			var imagePair = imagePairs[i];
+			var imageName = imagePair.name;
+			var imageToSave = imagePair.after;
+
+			var imageAsDataUrl = imageToSave.toDataURL("image/png");
+
+			var imageAsBase64String = imageAsDataUrl.split(',')[1];
+
+			var imageAsBytes = Base64Encoder.base64StringToBytes
+			(
+				imageAsBase64String
+			);
+
+			var imageAsTarFileEntry = TarFileEntry.fileNew
+			(
+				imageName,
+				imageAsBytes
+			);
+			imagesAsTarFile.entries.push(imageAsTarFileEntry);
+		}
+
+		imagesAsTarFile.downloadAs(fileNameToSaveAs);
+	}
+
+
 	// Copying.
 
 	imageAfterCopyToWorking()
