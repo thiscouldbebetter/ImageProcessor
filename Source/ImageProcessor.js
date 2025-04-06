@@ -6,8 +6,6 @@ class ImageProcessor
 		this.imagePairsBeforeAndAfter = [];
 
 		this.imagePairBeforeAndAfterSelectedName = null;
-
-		this.domElementUpdate();
 	}
 
 	static Instance()
@@ -66,8 +64,6 @@ class ImageProcessor
 				}
 			}
 		}
-
-		this.domElementUpdate();
 	}
 
 	imageAdd(imageToAdd)
@@ -83,7 +79,21 @@ class ImageProcessor
 		);
 		this.imageCopyToOther(imageToAdd, imageBeforeAsCanvas);
 		this.imageCopyToOther(imageToAdd, imageAfterAsCanvas);
-		this.imagePairsBeforeAndAfter.push(imagePairBeforeAndAfter);
+		var imagePairs = this.imagePairsBeforeAndAfter;
+		var i = 0;
+		for (var i = 0; i < imagePairs.length; i++)
+		{
+			var imagePairAlreadySorted = imagePairs[i];
+			if (imageToAdd.name < imagePairAlreadySorted.name)
+			{
+				break;
+			}
+		}
+		imagePairs.splice
+		(
+			i, 0, imagePairBeforeAndAfter
+		);
+		this.selectImagesToProcess = null; // Invalidate DOM.
 	}
 
 	imagePairBeforeAndAfterByName(name)
@@ -121,8 +131,19 @@ class ImageProcessor
 		}
 
 		this.imageCopyToOther(imagePairSelected.before, this.imageAsCanvasBefore);
+	}
 
-		this.domElementUpdate();
+	imagePairBeforeAndAfterSelectByIndex(indexToSelect)
+	{
+		var imagePairToSelect =
+			this.imagePairsBeforeAndAfter[indexToSelect];
+
+		this.imagePairBeforeAndAfterSelectedName = imagePairToSelect;
+
+		this.imageCopyToOther
+		(
+			imagePairToSelect.before, this.imageAsCanvasBefore
+		);
 	}
 
 	imagePairBeforeAndAfterSelected()
@@ -144,7 +165,6 @@ class ImageProcessor
 			var imageBefore = imagePair.before;
 			this.imageCopyToOther(imageAfter, imageBefore);
 		}
-		this.domElementUpdate();
 	}
 
 	imagesProcessedSave()
@@ -250,6 +270,26 @@ class ImageProcessor
 			this.imageAsCanvasAfter = d.createElement("canvas");
 		}
 
+		if (this.selectImagesToProcess == null)
+		{
+			var imagePairs = this.imagePairsBeforeAndAfter;
+
+			var selectImagesToProcess =
+				d.getElementById("selectImagesToProcess");
+
+			selectImagesToProcess.innerHTML = "";
+			for (var i = 0; i < imagePairs.length; i++)
+			{
+				var imagePair = imagePairs[i];
+				var imageAsOption = d.createElement("option");
+				imageAsOption.innerHTML = imagePair.name;
+				imageAsOption.value = imagePair.name;
+				selectImagesToProcess.appendChild(imageAsOption);
+			}
+
+			this.selectImagesToProcess = selectImagesToProcess;
+		}
+
 		var divImageBefore = d.getElementById("divImageBefore");
 		divImageBefore.innerHTML = "";
 
@@ -278,12 +318,3 @@ class ImageProcessor
 	}
 }
 
-class ImagePairBeforeAndAfter
-{
-	constructor(name, before, after)
-	{
-		this.name = name;
-		this.before = before;
-		this.after = after;
-	}
-}

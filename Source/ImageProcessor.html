@@ -23,6 +23,12 @@
 				id="selectImagesToProcess"
 				onchange="UiEventHandler.selectImagesToProcess_Changed(this)"
 			></select>
+			<button onclick="UiEventHandler.buttonImageSelectPrev_Clicked()">
+				Prev (Ctrl-Left)
+			</button>
+			<button onclick="UiEventHandler.buttonImageSelectNext_Clicked()">
+				Next (Ctrl-Right)
+			</button>
 			<label>Upload:</label>
 			<input
 				type="file"
@@ -69,12 +75,12 @@
 						<div>
 							<div>
 								<button onclick="UiEventHandler.buttonPreview_Clicked()">
-									Preview -&gt; (F12)
+									Preview -&gt; (Alt-Right)
 								</button>
 							</div>
 							<div>
 								<button onclick="UiEventHandler.buttonApply_Clicked()">
-									&lt;- Apply (Shift-F12)
+									&lt;- Apply (Alt-Left)
 								</button>
 							</div>
 						</div>
@@ -103,6 +109,7 @@
 <script type="text/javascript" src="Base64Encoder.js"></script>
 <script type="text/javascript" src="Box.js"></script>
 <script type="text/javascript" src="Coords.js"></script>
+<script type="text/javascript" src="ImagePairBeforeAndAfter.js"></script>
 <script type="text/javascript" src="ImageProcessor.js"></script>
 <script type="text/javascript" src="ImageProcessorCommand.js"></script>
 <script type="text/javascript" src="ImageProcessorOperation.js"></script>
@@ -122,11 +129,8 @@
 
 <script type="text/javascript">
 
-	var d = document;
-	var textareaOperationsToPerform =
-		d.getElementById("textareaOperationsToPerform");
-	textareaOperationsToPerform.onkeydown =
-		UiEventHandler.textareaOperationsToPerform_KeyPressed;
+	document.body.onkeydown =
+		UiEventHandler.body_KeyPressed;
 
 </script>
 

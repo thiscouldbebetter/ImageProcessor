@@ -1,10 +1,88 @@
 
 class UiEventHandler
 {
+	static body_KeyPressed(e)
+	{
+		var keyPressed = e.key;
+		if (e.altKey)
+		{
+			if (keyPressed == "ArrowLeft")
+			{
+				e.preventDefault();
+				UiEventHandler.buttonApply_Clicked();
+			}
+			else if (keyPressed == "ArrowRight")
+			{
+				e.preventDefault();
+				UiEventHandler.buttonPreview_Clicked();
+			}
+		}
+		else if (e.ctrlKey)
+		{
+			if (keyPressed == "ArrowLeft")
+			{
+				e.preventDefault();
+				UiEventHandler.buttonImageSelectPrev_Clicked();
+			}
+			else if (keyPressed == "ArrowRight")
+			{
+				e.preventDefault();
+				UiEventHandler.buttonImageSelectNext_Clicked();
+			}
+		}
+	}
+
 	static buttonApply_Clicked()
 	{
 		var imageProcessor = ImageProcessor.Instance();
 		imageProcessor.imagesAfterApplyToBefore();
+		imageProcessor.domElementUpdate();
+	}
+
+	static buttonImageSelect_Clicked(offset)
+	{
+		var imageProcessor = ImageProcessor.Instance();
+
+		var d = document;
+		var selectImagesToProcess =
+			d.getElementById("selectImagesToProcess");
+
+		if (selectImagesToProcess.length > 0)
+		{
+			var indexToSelect = selectImagesToProcess.selectedIndex;
+			indexToSelect += offset;
+			if (indexToSelect < 0)
+			{
+				indexToSelect = selectImagesToProcess.length - 1;
+			}
+			else if (indexToSelect >= selectImagesToProcess.length)
+			{
+				indexToSelect = 0;
+			}
+
+			selectImagesToProcess.selectedIndex =
+				indexToSelect;
+
+			var imagePairBeforeAndAfterSelectedName =
+				selectImagesToProcess.value;
+
+			var imageProcessor = ImageProcessor.Instance();
+			imageProcessor.imagePairBeforeAndAfterSelectByName
+			(
+				imagePairBeforeAndAfterSelectedName
+			);
+			imageProcessor.domElementUpdate();
+		}
+	}
+
+	static buttonImageSelectNext_Clicked()
+	{
+		this.buttonImageSelect_Clicked(1);
+	}
+
+	static buttonImageSelectPrev_Clicked()
+	{
+		this.buttonImageSelect_Clicked(-1);
 	}
 
 	static buttonPreview_Clicked()
@@ -42,6 +120,7 @@ class UiEventHandler
 			var imageProcessor = ImageProcessor.Instance();
 
 			imageProcessor.commandsPerform(commandsToPerform);
+			imageProcessor.domElementUpdate();
 		}
 	}
 
@@ -110,7 +189,8 @@ class UiEventHandler
 	{
 		var d = document;
 
-		var divImageBefore = d.getElementById("divImageBefore");
+		var divImageBefore =
+			d.getElementById("divImageBefore");
 		// divImageAsCanvas.innerHTML = "Loading image..."; // Probably doesn't work.
 
 		var files = inputFiles.files;
@@ -152,22 +232,17 @@ class UiEventHandler
 	static inputFiles_Changes_ImagesLoaded(imgElementsLoaded)
 	{
 		var imageProcessor = ImageProcessor.Instance();
-		var d = document;
-		var selectImagesToProcess =
-			d.getElementById("selectImagesToProcess");
+
 		for (var i = 0; i < imgElementsLoaded.length; i++)
 		{
 			var imgElement = imgElementsLoaded[i];
 
 			imageProcessor.imageAdd(imgElement);
-
-			var imageAsOption = d.createElement("option");
-			imageAsOption.innerHTML = imgElement.name;
-			imageAsOption.value = imgElement.name;
-			selectImagesToProcess.appendChild(imageAsOption);
 		}
 
-		this.selectImagesToProcess_Changed();
+		imageProcessor.domElementUpdate(); // hack
+
+		this.buttonImageSelectNext_Clicked(); // hack
 	}
 
 	static selectImagesToProcess_Changed()
@@ -182,23 +257,7 @@ class UiEventHandler
 		(
 			imagePairBeforeAndAfterSelectedName
 		);
-	}
-
-	static textareaOperationsToPerform_KeyPressed(e)
-	{
-		var keyPressed = e.key;
-		if (keyPressed == "F12")
-		{
-			e.preventDefault();
-			if (e.shiftKey)
-			{
-				UiEventHandler.buttonApply_Clicked();
-			}
-			else
-			{
-				UiEventHandler.buttonPreview_Clicked();
-			}
-		}
+		imageProcessor.domElementUpdate();
 	}
 
 }
