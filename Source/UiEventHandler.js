@@ -184,4 +184,21 @@ class UiEventHandler
 		);
 	}
 
+	static textareaOperationsToPerform_KeyPressed(e)
+	{
+		var keyPressed = e.key;
+		if (keyPressed == "F12")
+		{
+			e.preventDefault();
+			if (e.shiftKey)
+			{
+				UiEventHandler.buttonApply_Clicked();
+			}
+			else
+			{
+				UiEventHandler.buttonPreview_Clicked();
+			}
+		}
+	}
+
 }

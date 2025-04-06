@@ -68,10 +68,14 @@
 					<td>
 						<div>
 							<div>
-								<button onclick="UiEventHandler.buttonPreview_Clicked()">Preview -&gt;</button>
+								<button onclick="UiEventHandler.buttonPreview_Clicked()">
+									Preview -&gt; (F12)
+								</button>
 							</div>
 							<div>
-								<button onclick="UiEventHandler.buttonApply_Clicked()">&lt;- Apply</button>
+								<button onclick="UiEventHandler.buttonApply_Clicked()">
+									&lt;- Apply (Shift-F12)
+								</button>
 							</div>
 						</div>
 					</td>
@@ -115,6 +119,16 @@
 <script type="text/javascript" src="TarFileExplorer/Source/Utility/FileHelper.js"></script>
 
 <script type="text/javascript" src="Imports.js"></script>
+
+<script type="text/javascript">
+
+	var d = document;
+	var textareaOperationsToPerform =
+		d.getElementById("textareaOperationsToPerform");
+	textareaOperationsToPerform.onkeydown =
+		UiEventHandler.textareaOperationsToPerform_KeyPressed;
+
+</script>
 
 </body>
 

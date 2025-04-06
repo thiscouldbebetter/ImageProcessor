@@ -15,6 +15,42 @@ class Coords
 		return new Coords(x, y);
 	}
 
+	static zeroes()
+	{
+		return new Coords(0, 0);
+	}
+
+	ceiling()
+	{
+		this.x = Math.ceil(this.x);
+		this.y = Math.ceil(this.y);
+		return this;
+	}
+
+	clone()
+	{
+		return new Coords(this.x, this.y);
+	}
+
+	divide(other)
+	{
+		this.x /= other.x;
+		this.y /= other.y;
+		return this;
+	}
+
+	subtract(other)
+	{
+		this.x -= other.x;
+		this.y -= other.y;
+		return this;
+	}
+
+	toString()
+	{
+		return this.x + "x" + this.y;
+	}
+
 	wrapToRangeMax(max)
 	{
 		while (this.x < 0)

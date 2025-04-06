@@ -35,4 +35,16 @@ class ImageProcessorCommand
 	{
 		this.operation.apply(this, imageBefore, imageAfter);
 	}
+
+	clone()
+	{
+		return new ImageProcessorCommand
+		(
+			this.operation,
+			this.args.map
+			(
+				x => x.clone == null ? x : x.clone()
+			)
+		);
+	}
 }

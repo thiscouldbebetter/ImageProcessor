@@ -100,6 +100,33 @@ class ImageProcessorOperation_Instances
 			this.applyCrop
 		);
 
+		this.CropBottomRight = new ImageProcessorOperation
+		(
+			"cropbottomright",
+			[
+				p("amountToTrim", formatCoords),
+			], // parameters
+			this.applyCropBottomRight
+		);
+
+		this.CropToSize = new ImageProcessorOperation
+		(
+			"croptosize",
+			[
+				p("size", formatCoords)
+			], // parameters
+			this.applyCropToSize
+		);
+
+		this.CropTopLeft = new ImageProcessorOperation
+		(
+			"croptopleft",
+			[
+				p("amountToTrim", formatCoords),
+			], // parameters
+			this.applyCropTopLeft
+		);
+
 		this.DoNothing = ipo
 		(
 			"donothing",
@@ -133,6 +160,16 @@ class ImageProcessorOperation_Instances
 			"getsize",
 			[], // parameters
 			this.applyGetSize
+		);
+
+		this.Grid = ipo
+		(
+			"grid",
+			[
+				p("cellSizeInPixels", formatCoords),
+				p("color", formatString)
+			], // parameters
+			this.applyGrid
 		);
 
 		this.Monochrome = ipo
@@ -197,11 +234,15 @@ class ImageProcessorOperation_Instances
 			this.ColorInvert,
 			this.ColorReplace,
 			this.Crop,
+			this.CropBottomRight,
+			this.CropToSize,
+			this.CropTopLeft,
 			this.DoNothing,
 			this.FlipHorizontal,
 			this.FlipVertical,
 			this.GetColorAt,
 			this.GetSize,
+			this.Grid,
 			this.Monochrome,
 			this.Rotate,
 			this.Scale,
@@ -498,10 +539,18 @@ class ImageProcessorOperation_Instances
 	{
 		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
-		var sizeBefore = new Coords(imageBefore.width, imageAfter.height);
+		var sizeBefore =
+			new Coords(imageBefore.width, imageBefore.height);
 
-		var pos = Coords.fromString(command.args[0]);
-		var sizeCropped = Coords.fromString(command.args[1]);
+		var pos =
+			command.args[0] == null
+			? Coords.zeroes()
+			: Coords.fromString(command.args[0]);
+
+		var sizeCropped =
+			command.args[1] == null
+			? sizeBefore.clone().subtract(pos)
+			: Coords.fromString(command.args[1]);
 
 		imageAfter.width = sizeCropped.x;
 		imageAfter.height = sizeCropped.y;
@@ -514,6 +563,54 @@ class ImageProcessorOperation_Instances
 			0, 0,
 			sizeCropped.x, sizeCropped.y
 		);
+	}
+
+	applyCropBottomRight(command, imageBefore, imageAfter)
+	{
+		var sizeBefore =
+			new Coords(imageBefore.width, imageBefore.height);
+
+		var amountToTrimAsString =
+			command.args[0] || "0x0";
+		var amountToTrim =
+			Coords.fromString(amountToTrimAsString);
+
+		var sizeAfter =
+			sizeBefore
+				.clone()
+				.subtract(amountToTrim);
+
+		command = command.clone();
+		command.args =
+		[
+			Coords.zeroes().toString(),
+			sizeAfter.toString()
+		];
+		var instances = ImageProcessorOperation.Instances();
+		instances.applyCrop(command, imageBefore, imageAfter);
+	}
+
+	applyCropToSize(command, imageBefore, imageAfter)
+	{
+		command = command.clone();
+		command.args =
+		[
+			Coords.zeroes(),
+			command.args[0]
+		];
+		var instances = ImageProcessorOperation.Instances();
+		instances.applyCrop(command, imageBefore, imageAfter);
+	}
+
+	applyCropTopLeft(command, imageBefore, imageAfter)
+	{
+		command = command.clone();
+		command.args =
+		[
+			command.args[0]
+		];
+		var instances = ImageProcessorOperation.Instances();
+		instances.applyCrop(command, imageBefore, imageAfter);
 	}
 
 	applyDoNothing(command, imageBefore, imageAfter)
@@ -616,6 +713,48 @@ class ImageProcessorOperation_Instances
 		gAfter.fillText(colorComponentsRGBAAsString, 0, fontHeightInPixels);
 	}
 
+	applyGrid(command, imageBefore, imageAfter)
+	{
+		var args = command.args;
+		var cellSizeInPixels =
+			args[0] == null
+			? new Coords(100, 100)
+			: Coords.fromString(args[0]);
+		var gridColor = args[1] || "Cyan";
+
+		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
+		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
+
+		var imageSizeInPixels =
+			new Coords(imageBefore.width, imageBefore.height);
+		var imageSizeInCells =
+			imageSizeInPixels
+				.clone()
+				.divide(cellSizeInPixels)
+				.ceiling();
+
+		gAfter.drawImage(imageBefore, 0, 0);
+		gAfter.strokeStyle = gridColor;
+
+		for (var y = 0; y < imageSizeInCells.y; y++)
+		{
+			var linePosInPixels = y * cellSizeInPixels.y;
+			gAfter.beginPath();
+			gAfter.moveTo(0, linePosInPixels);
+			gAfter.lineTo(imageSizeInPixels.x, linePosInPixels);
+			gAfter.stroke();
+		}
+
+		for (var x = 0; x < imageSizeInCells.x; x++)
+		{
+			var linePosInPixels = x * cellSizeInPixels.x;
+			gAfter.beginPath();
+			gAfter.moveTo(linePosInPixels, 0);
+			gAfter.lineTo(linePosInPixels, imageSizeInPixels.y);
+			gAfter.stroke();
+		}
+	}
+
 	applyMonochrome(command, imageBefore, imageAfter)
 	{
 		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
@@ -674,7 +813,7 @@ class ImageProcessorOperation_Instances
 
 	applyScale(command, imageBefore, imageAfter)
 	{
-		var sizeBefore = new Coords(imageBefore.width, imageAfter.height);
+		var sizeBefore = new Coords(imageBefore.width, imageBefore.height);
 
 		var scaleFactors = Coords.fromString(command.args[0]);
 		var sizeScaled = new Coords
