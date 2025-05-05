@@ -58,10 +58,15 @@
 				<tr>
 					<td>
 						<label>Before:</label>
+						<button onclick="UiEventHandler.buttonPreview_Clicked()">
+							Preview -&gt; (Alt-Right)
+						</button>
 					</td>
-					<td></td>
 					<td>
 						<label>After:</label>
+						<button onclick="UiEventHandler.buttonApply_Clicked()">
+							&lt;- Apply (Alt-Left)
+						</button>
 					</td>
 				</tr>
 
@@ -69,20 +74,6 @@
 					<td>
 						<div id="divImageBefore">
 							<span>[No image loaded yet.]</span>
-						</div>
-					</td>
-					<td>
-						<div>
-							<div>
-								<button onclick="UiEventHandler.buttonPreview_Clicked()">
-									Preview -&gt; (Alt-Right)
-								</button>
-							</div>
-							<div>
-								<button onclick="UiEventHandler.buttonApply_Clicked()">
-									&lt;- Apply (Alt-Left)
-								</button>
-							</div>
 						</div>
 					</td>
 					<td>
@@ -114,6 +105,29 @@
 <script type="text/javascript" src="ImageProcessorCommand.js"></script>
 <script type="text/javascript" src="ImageProcessorOperation.js"></script>
 <script type="text/javascript" src="UiEventHandler.js"></script>
+
+<script type="text/javascript" src="Operations/Blur.js"></script>
+<script type="text/javascript" src="Operations/Box.js"></script>
+<script type="text/javascript" src="Operations/Brighten.js"></script>
+<script type="text/javascript" src="Operations/Clear.js"></script>
+<script type="text/javascript" src="Operations/ColorInvert.js"></script>
+<script type="text/javascript" src="Operations/ColorReplace.js"></script>
+<script type="text/javascript" src="Operations/Crop.js"></script>
+<script type="text/javascript" src="Operations/CropBottomRight.js"></script>
+<script type="text/javascript" src="Operations/CropToSize.js"></script>
+<script type="text/javascript" src="Operations/CropTopLeft.js"></script>
+<script type="text/javascript" src="Operations/DoNothing.js"></script>
+<script type="text/javascript" src="Operations/FlipHorizontal.js"></script>
+<script type="text/javascript" src="Operations/FlipVertical.js"></script>
+<script type="text/javascript" src="Operations/GetColorAt.js"></script>
+<script type="text/javascript" src="Operations/GetSize.js"></script>
+<script type="text/javascript" src="Operations/Grid.js"></script>
+<script type="text/javascript" src="Operations/Monochrome.js"></script>
+<script type="text/javascript" src="Operations/Rotate.js"></script>
+<script type="text/javascript" src="Operations/Scale.js"></script>
+<script type="text/javascript" src="Operations/Shift.js"></script>
+<script type="text/javascript" src="Operations/Text.js"></script>
+<script type="text/javascript" src="Operations/Threshold.js"></script>
 
 <script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFile.js"></script>
 <script type="text/javascript" src="TarFileExplorer/Source/TarFile/TarFileEntry.js"></script>
