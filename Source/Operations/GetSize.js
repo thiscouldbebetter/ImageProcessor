@@ -25,3 +25,5 @@ class ImageProcessorOperation_GetSize
 		gAfter.fillText(colorComponentsRGBAAsString, 0, fontHeightInPixels);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_GetSize() );

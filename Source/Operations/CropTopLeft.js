@@ -21,3 +21,5 @@ class ImageProcessorOperation_CropTopLeft
 		instances.applyCrop(command, imageBefore, imageAfter);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_CropTopLeft() );

@@ -33,3 +33,5 @@ class ImageProcessorOperation_FlipHorizontal
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_FlipHorizontal() );

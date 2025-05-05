@@ -163,7 +163,7 @@ class UiEventHandler
 		var operationsAvailable =
 			ImageProcessorOperation.Instances()._All;
 		var operationsAvailableAsStrings =
-			operationsAvailable.map(x => x.toStringInstructions());
+			operationsAvailable.map(x => ImageProcessorOperation.toStringInstructions(x));
 		var operationsAvailableJoined =
 			operationsAvailableAsStrings.join("\n");
 		var instructions =

@@ -75,3 +75,5 @@ class ImageProcessorOperation_ColorReplace
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_ColorReplace() );

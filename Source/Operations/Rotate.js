@@ -36,3 +36,5 @@ class ImageProcessorOperation_Rotate
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Rotate() );

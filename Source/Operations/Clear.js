@@ -27,3 +27,5 @@ class ImageProcessorOperation_Clear
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Clear() );

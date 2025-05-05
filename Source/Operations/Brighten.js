@@ -59,3 +59,5 @@ class ImageProcessorOperation_Brighten
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Brighten() );

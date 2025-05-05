@@ -13,3 +13,5 @@ class ImageProcessorOperation_DoNothing
 		gAfter.drawImage(imageBefore, 0, 0);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_DoNothing() );

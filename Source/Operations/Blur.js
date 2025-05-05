@@ -85,3 +85,5 @@ class ImageProcessorOperation_Blur
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Blur() );

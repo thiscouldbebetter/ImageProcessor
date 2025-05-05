@@ -33,3 +33,5 @@ class ImageProcessorOperation_Scale
 		);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Scale() );

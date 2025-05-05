@@ -36,3 +36,5 @@ class ImageProcessorOperation_Box
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Box() );

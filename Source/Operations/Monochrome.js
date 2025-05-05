@@ -34,3 +34,5 @@ class ImageProcessorOperation_Monochrome
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Monochrome() );

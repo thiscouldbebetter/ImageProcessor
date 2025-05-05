@@ -31,3 +31,5 @@ class ImageProcessorOperation_GetColorAt
 		gAfter.fillText(colorAtPosAsString, 0, fontHeightInPixels);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_GetColorAt() );

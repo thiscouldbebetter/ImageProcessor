@@ -65,3 +65,5 @@ class ImageProcessorOperation_Shift
 		);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Shift() );

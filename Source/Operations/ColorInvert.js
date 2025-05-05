@@ -36,3 +36,5 @@ class ImageProcessorOperation_ColorInvert
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_ColorInvert() );

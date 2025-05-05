@@ -41,3 +41,5 @@ class ImageProcessorOperation_Crop
 		);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Crop() );

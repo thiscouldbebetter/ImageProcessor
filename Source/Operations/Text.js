@@ -30,3 +30,5 @@ class ImageProcessorOperation_Text
 		gAfter.fillText(text, pos.x, pos.y);
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Text() );

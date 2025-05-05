@@ -53,3 +53,5 @@ class ImageProcessorOperation_Grid
 		}
 	}
 }
+
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Grid() );
