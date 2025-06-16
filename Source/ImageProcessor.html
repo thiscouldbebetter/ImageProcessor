@@ -4,7 +4,7 @@
 	<link rel="stylesheet" href="Style.css">
 </head>
 
-<body>
+<body onload="UiEventHandler.body_Load()">
 
 	<div id="divUi">
 		<h3>Image Processor</h3>
@@ -41,8 +41,11 @@
 
 			<label>Operations to Perform:</label>
 			<button onclick="UiEventHandler.buttonOperationsClear_Clicked()">Clear</button>
-			<button onclick="UiEventHandler.buttonOperationsList_Clicked()">List</button>
 			<button onclick="UiEventHandler.buttonOperationsLoadDemo_Clicked()">Demo</button>
+			<details>
+				<summary>Available Operations</summary>
+				<div id="divOperationsAvailable">todo</div>
+			</details>
 			<br />
 			<textarea
 				id="textareaOperationsToPerform"

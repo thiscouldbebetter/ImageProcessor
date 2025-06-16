@@ -32,6 +32,28 @@ class UiEventHandler
 		}
 	}
 
+	static body_Load()
+	{
+		var operationsAvailable =
+			ImageProcessorOperation.Instances()._All;
+		var operationsAvailableAsStrings =
+			operationsAvailable.map
+			(
+				x =>
+					ImageProcessorOperation
+						.toStringInstructions(x)
+						.split("<").join("&lt;")
+						.split(">").join("&gt;")
+			);
+		var operationsAvailableJoined =
+			operationsAvailableAsStrings.join("<br />");
+
+		var d = document;
+
+		var divOperationsAvailable =
+			d.getElementById("divOperationsAvailable");
+		divOperationsAvailable.innerHTML = operationsAvailableJoined;
+	}
 	static buttonApply_Clicked()
 	{
 		var imageProcessor = ImageProcessor.Instance();
@@ -156,23 +178,6 @@ class UiEventHandler
 		var newline = "\n";
 		var operationsToDemoAsString = operationsToDemoAsLines.join(newline);
 		textareaOperationsToPerform.value = operationsToDemoAsString;
-	}
-
-	static buttonOperationsList_Clicked()
-	{
-		var operationsAvailable =
-			ImageProcessorOperation.Instances()._All;
-		var operationsAvailableAsStrings =
-			operationsAvailable.map(x => ImageProcessorOperation.toStringInstructions(x));
-		var operationsAvailableJoined =
-			operationsAvailableAsStrings.join("\n");
-		var instructions =
-			"Operations Available:\n"
-			+ "\n"
-			+ operationsAvailableJoined
-			+ "\n";
-
-		alert(instructions);
 	}
 
 	static buttonSave_Clicked()
