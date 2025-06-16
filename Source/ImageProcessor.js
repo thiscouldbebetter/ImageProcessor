@@ -107,6 +107,7 @@ class ImageProcessor
 		imageToCopyOver.width = imageToCopy.width;
 		imageToCopyOver.height = imageToCopy.height;
 		var graphicsToCopyOver = imageToCopyOver.getContext("2d");
+		graphicsToCopyOver.clearRect(0, 0, imageToCopyOver.width, imageToCopyOver.height);
 		graphicsToCopyOver.drawImage(imageToCopy, 0, 0);
 	}
 
@@ -290,11 +291,11 @@ class ImageProcessor
 			this.selectImagesToProcess = selectImagesToProcess;
 		}
 
-		var divImageBefore = d.getElementById("divImageBefore");
-		divImageBefore.innerHTML = "";
+		var spanImageBefore = d.getElementById("spanImageBefore");
+		spanImageBefore.innerHTML = "";
 
-		var divImageAfter = d.getElementById("divImageAfter");
-		divImageAfter.innerHTML = "";
+		var spanImageAfter = d.getElementById("spanImageAfter");
+		spanImageAfter.innerHTML = "";
 
 		var imagePairSelected = this.imagePairBeforeAndAfterSelected();
 		if (imagePairSelected != null)
@@ -311,9 +312,9 @@ class ImageProcessor
 				this.imageAsCanvasAfter
 			);
 
-			divImageBefore.appendChild(this.imageAsCanvasBefore);
+			spanImageBefore.appendChild(this.imageAsCanvasBefore);
 
-			divImageAfter.appendChild(this.imageAsCanvasAfter);
+			spanImageAfter.appendChild(this.imageAsCanvasAfter);
 		}
 	}
 }

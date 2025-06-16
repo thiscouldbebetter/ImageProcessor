@@ -111,9 +111,9 @@ class UiEventHandler
 	{
 		var d = document;
 
-		var divImageBefore = d.getElementById("divImageBefore");
+		var spanImageBefore = d.getElementById("spanImageBefore");
 		var imageAsCanvasBefore =
-			divImageBefore.getElementsByTagName("canvas")[0];
+			spanImageBefore.getElementsByTagName("canvas")[0];
 
 		if (imageAsCanvasBefore == null)
 		{
@@ -194,9 +194,9 @@ class UiEventHandler
 	{
 		var d = document;
 
-		var divImageBefore =
-			d.getElementById("divImageBefore");
-		// divImageAsCanvas.innerHTML = "Loading image..."; // Probably doesn't work.
+		var spanImageBefore =
+			d.getElementById("spanImageBefore");
+		// spanImageBefore.innerHTML = "Loading image..."; // Probably doesn't work.
 
 		var files = inputFiles.files;
 		if (files.length > 0)
