@@ -1,24 +1,21 @@
 
-class ImageProcessorOperation_Brighten
+class ImageProcessorOperation_ColorDepthDivideBy
 {
 	constructor()
 	{
-		this.name = "brighten";
+		this.name = "colordepthdivideby";
 		this.parameters =
 		[
 			new ImageProcessorOperationParameter
 			(
-				"increment",
+				"divisor",
 				ImageProcessorOperationParameter.formatNumber
 			)
-		]
+		];
 	}
 
 	apply(command, imageBefore, imageAfter)
 	{
-		var args = command.args;
-		var intensityOffset = 255 * parseFloat(args[0]);
-
 		var gBefore = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageBefore);
 		var gAfter = ImageProcessorOperation_Instances.canvasToGraphicsContext(imageAfter);
 
@@ -26,6 +23,8 @@ class ImageProcessorOperation_Brighten
 
 		var imageBeforeData =
 			gBefore.getImageData(0, 0, size.x, size.y).data;
+
+		var divisor = parseFloat(command.args[0]);
 
 		for (var y = 0; y < size.y; y++)
 		{
@@ -41,16 +40,8 @@ class ImageProcessorOperation_Brighten
 					imageBeforeData[pixelComponentOffset + 2]
 				];
 
-				var componentsAfter = 
-					componentsBefore.slice().map
-					(
-						x =>
-						{
-							x += intensityOffset;
-							x = x < 0 ? 0 : x > 255 ? 255 : x;
-							return x;
-						}
-					)
+				var componentsAfter =
+					componentsBefore.map(x => Math.floor(x / divisor) * divisor);
 
 				var colorAfter =
 					"rgb("
@@ -64,4 +55,4 @@ class ImageProcessorOperation_Brighten
 	}
 }
 
-ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_Brighten() );
+ImageProcessorOperation.Instances().operationAdd(new ImageProcessorOperation_ColorDepthDivideBy() );
