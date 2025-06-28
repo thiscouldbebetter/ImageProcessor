@@ -7,11 +7,21 @@ class Coords
 		this.y = y;
 	}
 
+	static create()
+	{
+		return new Coords(0, 0);
+	}
+
 	static fromString(stringToParse)
 	{
 		var xAndY = stringToParse.split("x");
 		var x = parseFloat(xAndY[0]);
 		var y = parseFloat(xAndY[1]);
+		return new Coords(x, y);
+	}
+
+	static fromXY(x, y)
+	{
 		return new Coords(x, y);
 	}
 
