@@ -24,7 +24,7 @@ class ImageProcessorOperation_Blur
 
 		convolutionKernel.apply
 		(
-			imageBefore, imageAfter, convolutionKernel
+			imageBefore, imageAfter
 		);
 	}
 }
